@@ -64,12 +64,22 @@ jobs:
       - script: stuart_parse -c ${{ item.Value.BuildFile }}
         displayName: Stuart Parse
       - script: stuart_report coverage Build/coverage.xml --by-platform --dsc ${{ item.Value.ActivePlatform }} -o Build/coverage.xml
+        displayName: Generate Coverage Report
     # - ${{ if and(eq(parameters.active_platform, ''), eq(parameters.build_file, '')) }}:
     #   - bash: echo "##[warning]Code Coverage on Regular Packages not yet supported"
     # - ${{ else }}:
     #   - bash: echo "##[error]parameters.build_file and parameters.active_platform must be set together"
 
-    # Copy build logs to the artifact staging directory
+    # Publish code coverage information
+    - script:
+        dotnet tool install -g dotnet-report-generator-globaltool
+        reportgenerator -reports:Build/coverage.xml -targetdir:$(Build.ArtifactStagingDirectory)/Coverage -reporttypes:Cobertura
+      displayName: Generate Cobertura Report
+    - task: PublishCodeCoverageResults@1
+      displayName: Publish Code Coverage
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: '$(Build.ArtifactStagingDirectory)/Coverage/Cobertura.xml'
     - template: ../Steps/CommonLogCopyAndPublish.yml
       parameters:
         artifacts_identifier: ${{ item.Value.Package }}
