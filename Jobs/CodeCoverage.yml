@@ -14,7 +14,7 @@ parameters:
   type: boolean
   default: false
 - name: vm_image
-  type: boolean
+  type: string
   default: ''
 
 jobs:
