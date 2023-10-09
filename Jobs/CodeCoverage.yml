@@ -29,6 +29,9 @@ jobs:
     workspace:
       clean: all
     
+    pool:
+        vmImage: ${{ parameters.vm_image }}
+  
     steps:
     - ${{ if eq(parameters.rust_build, true) }}:
       - template: ../Steps/RustSetupSteps.yml
