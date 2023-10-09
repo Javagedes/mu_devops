@@ -63,7 +63,7 @@ jobs:
         displayName: Stuart Update Build File For Stuart Parse
       - script: stuart_parse -c ${{ item.Value.BuildFile }}
         displayName: Stuart Parse
-      - script: stuart_report Build/coverage.xml --by-platform --dsc ${{ item.Value.ActivePlatform }} -o Build/coverage.xml
+      - script: stuart_report coverage Build/coverage.xml --by-platform --dsc ${{ item.Value.ActivePlatform }} -o Build/coverage.xml
     # - ${{ if and(eq(parameters.active_platform, ''), eq(parameters.build_file, '')) }}:
     #   - bash: echo "##[warning]Code Coverage on Regular Packages not yet supported"
     # - ${{ else }}:
