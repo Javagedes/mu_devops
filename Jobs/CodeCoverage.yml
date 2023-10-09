@@ -70,6 +70,6 @@ jobs:
     #   - bash: echo "##[error]parameters.build_file and parameters.active_platform must be set together"
 
     # Copy build logs to the artifact staging directory
-  - template: CommonLogCopyAndPublish.yml
+  - template: ../Steps/CommonLogCopyAndPublish.yml
     parameters:
       artifacts_identifier: ${{ item.Value.Package }}
