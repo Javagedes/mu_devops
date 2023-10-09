@@ -38,7 +38,7 @@ jobs:
     - template: ../Steps/SetupPythonPreReqs.yml
       parameters:
         install_pip_modules: true
-    
+    - template: ../Steps/InstallCoverageTools.yml
     - script: |
         pip install --upgrade --force git+https://github.com/javagedes/edk2-pytool-extensions@report-parser-sqlite3
         pip install --upgrade --force git+https://github.com/javagedes/edk2-pytool-library@parser-updates
