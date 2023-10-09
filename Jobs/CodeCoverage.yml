@@ -45,12 +45,12 @@ jobs:
     
     # First, we will compile and run unit tests to get code coverage information
     - ${{ if eq(parameters.do_setup, true) }}:
-      - script: stuart_setup
+      - script: stuart_setup -c ${{ parameters.ci_file }} -t NOOPT -p ${{ item.Value.Package }} CODE_COVERAGE=TRUE
         displayName: Stuart Setup For Unit Tests
     - ${{ if eq(parameters.do_ci_setup, true) }}:
-      - script: stuart_setup -c ${{ parameters.ci_file }}
+      - script: stuart_ci_setup -c ${{ parameters.ci_file }} -t NOOPT -p ${{ item.Value.Package }} CODE_COVERAGE=TRUE
         displayName: Stuart CI Setup For Unit Test
-    - script: stuart_update -c ${{ parameters.ci_file }}
+    - script: stuart_update -c ${{ parameters.ci_file }} -t NOOPT -p ${{ item.Value.Package }} CODE_COVERAGE=TRUE
       displayName: Stuart Update For Unit Tests
     - script: stuart_ci_build -c ${{ parameters.ci_file }} -t NOOPT -p ${{ item.Value.Package }} CODE_COVERAGE=TRUE
       displayName: Stuart CI Build For Unit Tests
