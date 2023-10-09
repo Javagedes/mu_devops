@@ -70,16 +70,11 @@ jobs:
     # - ${{ else }}:
     #   - bash: echo "##[error]parameters.build_file and parameters.active_platform must be set together"
 
-    # Publish code coverage information
-    - script:
-        dotnet tool install -g dotnet-report-generator-globaltool
-        reportgenerator -reports:Build/coverage.xml -targetdir:$(Build.ArtifactStagingDirectory)/Coverage -reporttypes:Cobertura
-      displayName: Generate Cobertura Report
     - task: PublishCodeCoverageResults@1
       displayName: Publish Code Coverage
       inputs:
         codeCoverageTool: Cobertura
-        summaryFileLocation: '$(Build.ArtifactStagingDirectory)/Coverage/Cobertura.xml'
+        summaryFileLocation: 'Build/cobertura.xml'
     - template: ../Steps/CommonLogCopyAndPublish.yml
       parameters:
         artifacts_identifier: ${{ item.Value.Package }}
