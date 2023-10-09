@@ -1,20 +1,20 @@
 parameters:
 - name: build_file
-  displayyName: Platform Build File
+  displayName: Platform Build File
   type: string
   default: ''
 - name: ci_file
   displayName: CI File
   type: string
   default: '.pytool/CISettings.py'
-- do_setup:
+- name: do_setup
   displayName: Run stuart_setup
   type: boolean
   default: false
-- do_ci_setup:
+- name: do_ci_setup
   displayName: Run stuart_ci_setup
   default: false
-- do_update:
+- name: do_update
   displayName: Run stuart_update
   type: boolean
   default: false
@@ -26,11 +26,11 @@ parameters:
   displayName: Extra Parse Args
   type: string
   default: ''
-- name: package_name:
+- name: package_name
   displayName: Package Name
   type: string
   default: ''
-- name: extra_coverage_args:
+- name: extra_coverage_args
   displayName: Extra Coverage Report Arguments
   type: string
   default: ''
