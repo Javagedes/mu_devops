@@ -37,7 +37,7 @@ parameters:
 
 steps:
 # Parse the environment
-- script: stuart_parse -c ${{ parameters.build_file }} ${{ paramters.extra_parse_args }}
+- script: stuart_parse -c ${{ parameters.build_file }} ${{ parameters.extra_parse_args }}
   displayName: Parse Active Environment
 
 # Setup the environment for a stuart_ci_build to compile and run host based unit tests
