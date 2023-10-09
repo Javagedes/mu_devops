@@ -1,0 +1,75 @@
+parameters:
+- name: build_matrix
+  type: object
+- name: rust_build
+  type: boolean
+  default: false
+- name: ci_file
+  type: string
+  default: '.pytool/CISettings.py'
+- name: do_setup
+  type: boolean
+  default: false
+- name: do_ci_setup
+  type: boolean
+  default: false
+- name: package
+  type: string
+  default: ''
+- name: active_platform
+  type: string
+  default: ''
+
+jobs:
+
+- ${{ each item in parameters.build_matrix }}:
+  - job: ${{ item.Key }}_Code_Coverage
+    timeoutInMinutes: 120
+
+    workspace:
+      clean: all
+    
+    steps:
+    - ${{ if eq(parameters.rust_build, true) }}:
+      - template: ../Steps/RustSetupSteps.yml
+    - checkout: self
+      clean: True
+      fetchDepth: 0
+    - template: ../Steps/SetupPythonPreReqs.yml
+      parameters:
+        install_pip_modules: true
+    
+    # Temporary
+    - script: |
+        pip install --upgrade --force git+https://github.com/javagedes/edk2-pytool-extensions@report-parser-sqlite3
+        pip install --upgrade --force git+https://github.com/javagedes/edk2-pytool-library@parser-updates
+    
+    # First, we will compile and run unit tests to get code coverage information
+    - ${{ if eq(parameters.do_setup, true) }}:
+      - script: stuart_setup
+        displayName: Stuart Setup For Unit Tests
+    - ${{ if eq(parameters.do_ci_setup, true) }}:
+      - script: stuart_setup -c ${{ parameters.ci_file }}
+        displayName: Stuart CI Setup For Unit Test
+    - script: stuart_update -c ${{ parameters.ci_file }}
+      displayName: Stuart Update For Unit Tests
+    - script: stuart_ci_build -c ${{ parameters.ci_file }} -t NOOPT -p ${{ parameters.package }} CODE_COVERAGE=TRUE
+      displayName: Stuart CI Build For Unit Tests
+    
+    # Next we will run stuart_parse to get the environment information we need
+    - ${{ if and(ne(parameters.active_platform, ''), ne(parameters.build_file, '')) }}:
+      - script: stuart_setup -c ${{ parameters.build_file }}
+        displayName: Stuart Setup Build File For Stuart Parse
+      - script: stuart_update -c ${{ parameters.build_file }}
+        displayName: Stuart Update Build File For Stuart Parse
+      - script: stuart_parse -c ${{ parameters.build_file }}
+        displayName: Stuart Parse
+      - script: stuart_report Build/coverage.xml --by-platform --dsc ${{ parameters.active_platform }} -o Build/coverage.xml
+    - ${{ if and(eq(parameters.active_platform, ''), eq(parameters.build_file, '')) }}:
+      - bash: echo "##[warning]Code Coverage on Regular Packages not yet supported"
+    - ${{ else }}:
+      - bash: echo "##[error]parameters.build_file and parameters.active_platform must be set together"
+    # Copy build logs to the artifact staging directory
+  - template: CommonLogCopyAndPublish.yml
+    parameters:
+      artifacts_identifier: ${{ parameters.artifacts_identifier }}
