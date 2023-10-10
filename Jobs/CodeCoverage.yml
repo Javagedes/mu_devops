@@ -56,9 +56,9 @@ jobs:
     - checkout: self
       clean: True
       fetchDepth: 0
-    - template: ../Steps/SetupPythonPreReqs.yml
-      parameters:
-        install_pip_modules: true
+    # - template: ../Steps/SetupPythonPreReqs.yml
+    #   parameters:
+    #     install_pip_modules: true
     - template: ../Steps/InstallCoverageTools.yml
     # Temporary until edk2-pytools is updated
     - script: |
