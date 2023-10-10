@@ -98,6 +98,7 @@ jobs:
 
     # - script: 'ReportGenerator -reports:Build/coverage.xml -targetdir:Build/Coverage -reporttypes:HtmlSummary;JsonSummary;Cobertura -title:${{ item.Value.Package }}_CodeCoverage -tag:${{Build.SourceVersion}}'
     #   displayName: Generate Coverage Reports
+    - script: dotnet tool install -g dotnet-reportgenerator-globaltool
     - script: 'reportgenerator -reports:"Build/coverage.xml" -targetdir:"Build/Coverage" -reporttypes:"HtmlSummary;JsonSummary;Cobertura"'
 
     - template: ../Steps/OtherCopyAndPublish.yml
