@@ -98,11 +98,12 @@ jobs:
 
     # - script: 'ReportGenerator -reports:Build/coverage.xml -targetdir:Build/Coverage -reporttypes:HtmlSummary;JsonSummary;Cobertura -title:${{ item.Value.Package }}_CodeCoverage -tag:${{Build.SourceVersion}}'
     #   displayName: Generate Coverage Reports
+    - script: 'report generator -reports:"Build/coverage.xml" -targetdir:"Build/Coverage" -reporttypes:"HtmlSummary;JsonSummary;Cobertura"'
 
     - template: ../Steps/OtherCopyAndPublish.yml
       parameters: 
         artifacts_other: Coverage/**/*
-        artifact_identifier: ${{item.Value.Package}}_Coverage
+        artifacts_identifier: ${{item.Value.Package}}_Coverage
 
     - template: ../Steps/CommonLogCopyAndPublish.yml
       parameters:
