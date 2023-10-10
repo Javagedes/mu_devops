@@ -2,6 +2,15 @@ parameters:
 - name: rust_build
   type: boolean
   default: false
+- name: container_build
+  type: boolean
+  default: false
+- name: linux_container_image
+  type: string
+  default: ''
+- name: linux_container_options
+  type: string
+  default: ''
 - name: ci_file
   type: string
   default: '.pytool/CISettings.py'
@@ -32,17 +41,11 @@ jobs:
     workspace:
       clean: all
     
-    ${{ if eq(item.Value.SelfHostAgent, true) }}:
-      pool:
-        name: $(${{ parameters.pool_name }})
-        demands:
-        - Agent.OS -equals ${{ parameters.os_type }}
-    ${{ else }}:
-      pool:
-        vmImage: ${{ parameters.vm_image }}
+    pool:
+      vmImage: ${{ parameters.vm_image }}
     
     # Use a container if one was specified.
-    ${{ if and(eq(parameters.container_build, true), not(contains(parameters.vm_image, 'windows')), ne(item.Value.SelfHostAgent, true)) }}:
+    ${{ if and(eq(parameters.container_build, true), not(contains(parameters.vm_image, 'windows'))) }}:
       container:
         image: ${{ parameters.linux_container_image }}
         options: --name mu_devops_build_container ${{ parameters.linux_container_options }}
