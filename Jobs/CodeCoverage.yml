@@ -74,7 +74,7 @@ jobs:
       displayName: Publish Code Coverage
       inputs:
         codeCoverageTool: Cobertura
-        summaryFileLocation: 'Build/cobertura.xml'
+        summaryFileLocation: 'Build/coverage.xml'
     - template: ../Steps/CommonLogCopyAndPublish.yml
       parameters:
         artifacts_identifier: ${{ item.Value.Package }}
