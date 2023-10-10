@@ -98,7 +98,7 @@ jobs:
 
     # - script: 'ReportGenerator -reports:Build/coverage.xml -targetdir:Build/Coverage -reporttypes:HtmlSummary;JsonSummary;Cobertura -title:${{ item.Value.Package }}_CodeCoverage -tag:${{Build.SourceVersion}}'
     #   displayName: Generate Coverage Reports
-    - script: 'report generator -reports:"Build/coverage.xml" -targetdir:"Build/Coverage" -reporttypes:"HtmlSummary;JsonSummary;Cobertura"'
+    - script: 'reportgenerator -reports:"Build/coverage.xml" -targetdir:"Build/Coverage" -reporttypes:"HtmlSummary;JsonSummary;Cobertura"'
 
     - template: ../Steps/OtherCopyAndPublish.yml
       parameters: 
