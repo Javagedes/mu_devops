@@ -77,7 +77,7 @@ jobs:
       displayName: Stuart Update For Unit Tests
     - script: stuart_ci_build -c ${{ parameters.ci_file }} -t NOOPT -p ${{ item.Value.Package }} CODE_COVERAGE=TRUE TOOL_CHAIN_TAG=${{ parameters.tool_chain }}
       displayName: Stuart CI Build For Unit Tests
-    
+
     # Next we will run stuart_parse to get the environment information we need
     - ${{ if and(ne(item.Value.ActivePlatform, ''), ne(item.Value.BuildFile, '')) }}:
       - script: stuart_setup -c ${{ item.Value.BuildFile }} TOOL_CHAIN_TAG=${{ parameters.tool_chain }}
@@ -93,19 +93,17 @@ jobs:
         displayName: Stuart Parse on CI File
       - script: stuart_report coverage Build/coverage.xml --by-package -p ${{ item.Value.Package }} -o Build/coverage.xml
         displayName: Generate Coverage Report
-    - ${{ else }}:
-      - bash: echo "##[error]parameters.build_file and parameters.active_platform must be set together"
-
-    # - script: 'ReportGenerator -reports:Build/coverage.xml -targetdir:Build/Coverage -reporttypes:HtmlSummary;JsonSummary;Cobertura -title:${{ item.Value.Package }}_CodeCoverage -tag:${{Build.SourceVersion}}'
-    #   displayName: Generate Coverage Reports
     - script: dotnet tool install -g dotnet-reportgenerator-globaltool
+      displayName: Install Report Generator Tool
     - script: 'reportgenerator -reports:"Build/coverage.xml" -targetdir:"Build/Coverage" -reporttypes:"HtmlSummary;JsonSummary;Cobertura"'
+      displayName: Run Report Generator Tool
 
+    # Publish the reports
     - template: ../Steps/OtherCopyAndPublish.yml
       parameters: 
         artifacts_other: Coverage/**/*
         artifacts_identifier: ${{item.Value.Package}}_Coverage
-
+    # Publish the logs
     - template: ../Steps/CommonLogCopyAndPublish.yml
       parameters:
         artifacts_identifier: ${{ item.Value.Package }}
