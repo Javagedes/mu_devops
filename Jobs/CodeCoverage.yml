@@ -1,7 +1,7 @@
 parameters:
 - name: tool_chain
   type: string
-  default: 'GCC5'
+  default: ''
 - name: rust_build
   type: boolean
   default: false
