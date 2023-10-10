@@ -96,11 +96,14 @@ jobs:
     - ${{ else }}:
       - bash: echo "##[error]parameters.build_file and parameters.active_platform must be set together"
 
-    - task: PublishCodeCoverageResults@1
-      displayName: Publish Code Coverage
-      inputs:
-        codeCoverageTool: Cobertura
-        summaryFileLocation: 'Build/coverage.xml'
+    - script: |
+        ReportGenerator -reports:Build/coverage.xml -targetdir:Build/Coverage -reporttypes:HtmlSummary;JsonSummary;Cobertura -title:"${{ item.Value.Package }} Code Coverage" -tag:${{Build.SourceVersion}}
+
+    - template: ../Steps/OtherCopyAndPublish.yml
+      parameters: 
+        artifacts_other: Coverage/**/*
+        artifact_identifier: ${{item.Value.Package}}_Coverage
+
     - template: ../Steps/CommonLogCopyAndPublish.yml
       parameters:
         artifacts_identifier: ${{ item.Value.Package }}
