@@ -1,6 +1,4 @@
 parameters:
-- name: build_matrix
-  type: object
 - name: rust_build
   type: boolean
   default: false
@@ -16,19 +14,39 @@ parameters:
 - name: vm_image
   type: string
   default: ''
+- name: build_matrix
+  type: object
+# Example:
+# build_matrix:
+#   QemuQ35Pkg:
+#     Package: QemuQ35Pkg
+#     ActivePlatform: QemuQ35Pkg/QemuQ35Pkg.dsc
+#     BuildFile: "Platforms/QemuQ35Pkg/PlatformBuild.py"
 
 jobs:
 
 - ${{ each item in parameters.build_matrix }}:
-  - job: ${{ item.Key }}_Code_Coverage
+  - job: ${{ item.Key }}_CodeCoverage
     timeoutInMinutes: 120
 
     workspace:
       clean: all
     
-    pool:
+    ${{ if eq(item.Value.SelfHostAgent, true) }}:
+      pool:
+        name: $(${{ parameters.pool_name }})
+        demands:
+        - Agent.OS -equals ${{ parameters.os_type }}
+    ${{ else }}:
+      pool:
         vmImage: ${{ parameters.vm_image }}
-  
+    
+    # Use a container if one was specified.
+    ${{ if and(eq(parameters.container_build, true), not(contains(parameters.vm_image, 'windows')), ne(item.Value.SelfHostAgent, true)) }}:
+      container:
+        image: ${{ parameters.linux_container_image }}
+        options: --name mu_devops_build_container ${{ parameters.linux_container_options }}
+
     steps:
     - ${{ if eq(parameters.rust_build, true) }}:
       - template: ../Steps/RustSetupSteps.yml
@@ -39,6 +57,7 @@ jobs:
       parameters:
         install_pip_modules: true
     - template: ../Steps/InstallCoverageTools.yml
+    # Temporary until edk2-pytools is updated
     - script: |
         pip install --upgrade --force git+https://github.com/javagedes/edk2-pytool-extensions@report-parser-sqlite3
         pip install --upgrade --force git+https://github.com/javagedes/edk2-pytool-library@parser-updates
@@ -62,13 +81,16 @@ jobs:
       - script: stuart_update -c ${{ item.Value.BuildFile }}
         displayName: Stuart Update Build File For Stuart Parse
       - script: stuart_parse -c ${{ item.Value.BuildFile }}
-        displayName: Stuart Parse
+        displayName: Stuart Parse on Build File
       - script: stuart_report coverage Build/coverage.xml --by-platform --dsc ${{ item.Value.ActivePlatform }} -o Build/coverage.xml
         displayName: Generate Coverage Report
-    # - ${{ if and(eq(parameters.active_platform, ''), eq(parameters.build_file, '')) }}:
-    #   - bash: echo "##[warning]Code Coverage on Regular Packages not yet supported"
-    # - ${{ else }}:
-    #   - bash: echo "##[error]parameters.build_file and parameters.active_platform must be set together"
+    - ${{ if and(eq(item.Value.ActivePlatform, ''), eq(item.Value.BuildFile, '')) }}:
+      - script: stuart_parse -c ${{ parameters.ci_file }}
+        displayName: Stuart Parse on CI File
+      - script: stuart_report coverage Build/coverage.xml --by-package -p ${{ item.Value.Package }} -o Build/coverage.xml
+        displayName: Generate Coverage Report
+    - ${{ else }}:
+      - bash: echo "##[error]parameters.build_file and parameters.active_platform must be set together"
 
     - task: PublishCodeCoverageResults@1
       displayName: Publish Code Coverage
