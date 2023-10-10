@@ -26,7 +26,7 @@ parameters:
 - name: vm_image
   type: string
   default: ''
-- name: build_matrix
+- name: matrix
   type: object
 # Example:
 # build_matrix:
@@ -37,7 +37,7 @@ parameters:
 
 jobs:
 
-- ${{ each item in parameters.build_matrix }}:
+- ${{ each item in parameters.matrix }}:
   - job: ${{ item.Key }}_CodeCoverage
     timeoutInMinutes: 120
 
