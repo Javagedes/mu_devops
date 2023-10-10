@@ -96,7 +96,8 @@ jobs:
     - ${{ else }}:
       - bash: echo "##[error]parameters.build_file and parameters.active_platform must be set together"
 
-    - script: ReportGenerator -reports:Build/coverage.xml -targetdir:Build/Coverage -reporttypes:HtmlSummary;JsonSummary;Cobertura -title:"${{ item.Value.Package }} Code Coverage" -tag:${{Build.SourceVersion}}
+    - script: |
+        ReportGenerator -reports:Build/coverage.xml -targetdir:Build/Coverage -reporttypes:HtmlSummary;JsonSummary;Cobertura -title:"${{ item.Value.Package }} Code Coverage" -tag:${{Build.SourceVersion}}
       displayName: Generate Coverage Reports
 
     - template: ../Steps/OtherCopyAndPublish.yml
