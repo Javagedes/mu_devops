@@ -78,7 +78,7 @@ jobs:
         uses: release-drafter/release-drafter@v5.25.0
         with:
           # Note: Path is relative to .github/
-          config-name: release-draft-config-n.yml
+          config-name: release-draft-config.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build a ${{ env.previous_mu_branch }} Draft
@@ -87,7 +87,7 @@ jobs:
         uses: release-drafter/release-drafter@v5.25.0
         with:
           # Note: Path is relative to .github/
-          config-name: release-draft-config-n-1.yml
+          config-name: release-draft-config.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Build the New Release Draft
