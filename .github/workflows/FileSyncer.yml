@@ -25,13 +25,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
 
-      - name: Generate Token
-        id: app-token
-        uses: actions/create-github-app-token@v3
-        with:
-          app-id: ${{ vars.MU_ACCESS_APP_ID }}
-          private-key: ${{ secrets.MU_ACCESS_APP_PRIVATE_KEY }}
-          owner: ${{ github.repository_owner }}
+      # - name: Generate Token
+      #   id: app-token
+      #   uses: actions/create-github-app-token@v3
+      #   with:
+      #     app-id: ${{ vars.MU_ACCESS_APP_ID }}
+      #     private-key: ${{ secrets.MU_ACCESS_APP_PRIVATE_KEY }}
+      #     owner: ${{ github.repository_owner }}
 
       - name: Run GitHub File Sync
         uses: BetaHuhn/repo-file-sync-action@v1
@@ -43,12 +43,12 @@ jobs:
           CONFIG_PATH: .sync/Files.yml
           DRY_RUN: false
           FORK: false
-          GH_INSTALLATION_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_PAT: ${{ secrets.GH_PAT }}
           GIT_EMAIL: uefibot@microsoft.com
           GIT_USERNAME: uefibot
           ORIGINAL_MESSAGE: true
           OVERWRITE_EXISTING_PR: true
           PR_BODY: |
-            🤖: View the [Repo File Sync Configuration File](https://github.com/microsoft/mu_devops/blob/main/.sync/Files.yml) to see how files are synced.
+            🤖: View the [Repo File Sync Configuration File](https://github.com/javagedes/mu_devops/blob/main/.sync/Files.yml) to see how files are synced.
           PR_LABELS: type:file-sync
           SKIP_PR: false
